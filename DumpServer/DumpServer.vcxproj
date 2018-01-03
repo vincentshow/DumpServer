@@ -47,11 +47,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>G:\ProgramData\workspace\poco-poco-1.8.1\Data\SQLite\include;G:\ProgramData\workspace\poco-poco-1.8.1\Data\include;G:\ProgramData\workspace\poco-poco-1.8.1\Net\include;G:\ProgramData\workspace\poco-poco-1.8.1\JSON\include;G:\ProgramData\workspace\poco-poco-1.8.1\Util\include;G:\ProgramData\workspace\poco-poco-1.8.1\Foundation\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\poco-poco-1.8.1\Data\SQLite\include;..\poco-poco-1.8.1\Data\include;..\poco-poco-1.8.1\Net\include;..\poco-poco-1.8.1\JSON\include;..\poco-poco-1.8.1\Util\include;..\poco-poco-1.8.1\Foundation\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>G:\ProgramData\workspace\poco-poco-1.8.1\build\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\poco-poco-1.8.1\build\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\poco-poco-1.8.1\build\bin\*.dll $(OutputPath) /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
