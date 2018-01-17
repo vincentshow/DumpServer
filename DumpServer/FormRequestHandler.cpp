@@ -25,7 +25,7 @@ using Dump::Model::DBManager;
 
 FormRequestHandler::FormRequestHandler(string basePath)
 {
-	_basePath = FileHelper::getExistsDir(basePath);
+	_basePath = FileHelper::getExistsDir(basePath, DateTimeFormatter::format(LocalDateTime().timestamp(), "%Y%m%d"));
 }
 
 void FormRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
@@ -34,7 +34,7 @@ void FormRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 	string host = request.clientAddress().host().toString();
 
 	Application& app = Application::instance();
-	app.logger().information(Poco::format("Request from %s in tid %d", host, tid));
+	app.logger().information(Poco::format("%s: Request from %s in tid %d", Poco::DateTimeFormatter::format(Poco::LocalDateTime().timestamp(), "%Y-%m-%d %H:%M:%s"), host, tid));
 
 	HTMLForm form;
 	vector<string> mutipartContent;
@@ -55,13 +55,15 @@ void FormRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 			ofstream ostr(path.toString());
 			meta.stringify(ostr);
 
+			DateTime dt;
+			dt.makeLocal(LocalDateTime().tzd());
 			DBManager::Instance()->execute<History>("Insert into History Values(?, ?, ?, ?, ?)", new History
 			{
 				meta.has("product") ? meta.getValue<string>("product") : "",
 				meta.has("version") ? meta.getValue<string>("version") : "",
 				host,
 				guid,
-				DateTime()
+				dt
 			});
 
 			mutipartContent.push_back(Poco::format("<h2>Upload</h2><p>%s", partHandler.name()));
