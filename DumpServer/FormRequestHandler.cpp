@@ -9,8 +9,8 @@
 #include "FileHelper.h"
 #include "FormRequestHandler.h"
 #include "MultiPartHandler.h"
-#include "DBManager.h"
-#include "History.h"
+#include "..\DumpLib\DBManager.h"
+#include "..\DumpLib\History.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -57,12 +57,12 @@ void FormRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 
 			DateTime dt;
 			dt.makeLocal(LocalDateTime().tzd());
-			DBManager::Instance()->execute<History>("Insert into History Values(?, ?, ?, ?, ?)", new History
+			DBManager::Instance()->execute<History>("replace into history values(?, ?, ?, ?, ?, ?, ?, ?)", new History
 			{
+				guid,
 				meta.has("product") ? meta.getValue<string>("product") : "",
 				meta.has("version") ? meta.getValue<string>("version") : "",
 				host,
-				guid,
 				dt
 			});
 

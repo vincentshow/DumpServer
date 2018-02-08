@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/DumpAnalyzer/dumps/10.200.20.27
+/DumpServer/dumps/20180124/127.0.0.1

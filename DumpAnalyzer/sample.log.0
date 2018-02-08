@@ -1,0 +1,33 @@
+System exception
+2018-01-25 17:24:33.893309: Service will start in tid 17304
+windbg -z "H:/gitrepo/DumpServer/DumpAnalyzer/dumps/20180117/10.199.4.159/6e880df0-fa6d-11e7-9796-0862662d7168.dmp" -logo "H:/gitrepo/DumpServer/DumpAnalyzer/dumps/20180117/10.199.4.159/6e880df0-fa6d-11e7-9796-0862662d7168.txt"
+System exception
+2018-01-26 10:27:01.229393: Service will start in tid 15048
+2018-01-26 10:28:29.722241: Service will start in tid 16468
+2018-01-26 10:30:38.983166: Service will start in tid 9908
+2018-01-26 10:31:11.813448: Service will start in tid 14200
+2018-01-26 10:31:46.067874: Service will start in tid 12220
+2018-01-26 10:32:49.689139: Service will start in tid 19928
+2018-01-26 10:34:32.686438: Service will start in tid 17140
+2018-01-29 11:40:35.994295: Service will start in tid 17292
+2018-01-29 11:42:50.836778: Service will start in tid 17244
+2018-01-29 11:49:34.387129: Service will start in tid 7908
+2018-02-08 10:11:05.979236: Service will start in tid 14132
+2018-02-08 10:14:38.728509: Service will start in tid 9504
+2018-02-08 10:41:02.965371: Service will start in tid 12848
+2018-02-08 10:42:36.065371: Service will start in tid 9516
+2018-02-08 10:53:49.007620: Service will start in tid 15028
+2018-02-08 10:56:33.056023: Service will start in tid 10308
+2018-02-08 10:57:27.364453: Service will start in tid 15436
+2018-02-08 11:20:56.056853: Service will start in tid 14212
+2018-02-08 11:29:34.638966: Service will start in tid 10800
+2018-02-08 11:32:54.431943: Service will start in tid 14200
+2018-02-08 11:34:09.831482: Service will start in tid 18068
+2018-02-08 11:35:24.375936: Service will start in tid 14640
+2018-02-08 11:36:12.324730: Service will start in tid 13512
+2018-02-08 11:37:40.843581: Service will start in tid 8040
+2018-02-08 11:38:13.092806: Service will start in tid 16472
+2018-02-08 13:36:28.240688: Service will start in tid 12048
+2018-02-08 13:40:21.075548: Service will start in tid 16508
+2018-02-08 13:43:08.094248: Service will start in tid 13496
+2018-02-08 13:43:40.375476: Service will start in tid 4856

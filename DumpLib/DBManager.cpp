@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "DBManager.h"
 #include "Poco\Delegate.h"
 #include "Poco\Data\RecordSet.h"
@@ -47,10 +48,10 @@ namespace Dump {
 			}
 			return _instance;
 		}
-		
+
 		void DBManager::initDB()
 		{
-			_session << "CREATE TABLE IF NOT EXISTS History (Product VARCHAR, Version VARCHAR, IP VARCHAR(30), GUID VARCHAR(40), Timestamp DATETIME)", now;
+			_session << "CREATE TABLE IF NOT EXISTS History (GUID VARCHAR(40) PRIMARY KEY, Product VARCHAR, Version VARCHAR, IP VARCHAR(30), Timestamp DATETIME, DumpPath VARCHAR(200), DumpResult Text, LastUpdate DATETIME)", now;
 		}
 
 		Notifier* DBManager::notifier(const void* pSender)
