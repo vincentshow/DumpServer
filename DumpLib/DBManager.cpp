@@ -51,7 +51,7 @@ namespace Dump {
 
 		void DBManager::initDB()
 		{
-			_session << "CREATE TABLE IF NOT EXISTS History (GUID VARCHAR(40) PRIMARY KEY, Product VARCHAR, Version VARCHAR, IP VARCHAR(30), Timestamp DATETIME, DumpPath VARCHAR(200), DumpResult Text, LastUpdate DATETIME)", now;
+			_session << "CREATE TABLE IF NOT EXISTS History (GUID VARCHAR(40) PRIMARY KEY, Product VARCHAR, Version VARCHAR, IP VARCHAR(30), Timestamp DATETIME, DumpPath VARCHAR(200), FollowUp VARCHAR(1000), SymbolName VARCHAR(500), StackText Text, LastUpdate DATETIME)", now;
 		}
 
 		Notifier* DBManager::notifier(const void* pSender)

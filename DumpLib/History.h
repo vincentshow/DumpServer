@@ -16,7 +16,9 @@ struct History
 	string   IP;
 	DateTime Timestamp;
 	string   DumpPath;
-	string   DumpResult;
+	string   FollowUp;
+	string   SymbolName;
+	string   StackText;
 	DateTime LastUpdate;
 };
 
@@ -34,7 +36,7 @@ namespace Poco {
 			static size_t size()
 			{
 				//must gurantee this number equals History property count
-				return 8;
+				return 10;
 			}
 
 			static void bind(size_t pos, const History& history, AbstractBinder::Ptr pBinder, AbstractBinder::Direction dir)
@@ -45,7 +47,9 @@ namespace Poco {
 				TypeHandler<string>::bind(pos++, history.IP, pBinder, dir);
 				TypeHandler<DateTime>::bind(pos++, history.Timestamp, pBinder, dir);
 				TypeHandler<string>::bind(pos++, history.DumpPath, pBinder, dir);
-				TypeHandler<string>::bind(pos++, history.DumpResult, pBinder, dir);
+				TypeHandler<string>::bind(pos++, history.FollowUp, pBinder, dir);
+				TypeHandler<string>::bind(pos++, history.SymbolName, pBinder, dir);
+				TypeHandler<string>::bind(pos++, history.StackText, pBinder, dir);
 				TypeHandler<DateTime>::bind(pos++, history.LastUpdate, pBinder, dir);
 			}
 
@@ -57,7 +61,9 @@ namespace Poco {
 				TypeHandler<string>::extract(pos++, history.IP, deflt.IP, pExtr);
 				TypeHandler<DateTime>::extract(pos++, history.Timestamp, deflt.Timestamp, pExtr);
 				TypeHandler<string>::extract(pos++, history.DumpPath, deflt.DumpPath, pExtr);
-				TypeHandler<string>::extract(pos++, history.DumpResult, deflt.DumpResult, pExtr);
+				TypeHandler<string>::extract(pos++, history.FollowUp, deflt.FollowUp, pExtr);
+				TypeHandler<string>::extract(pos++, history.SymbolName, deflt.SymbolName, pExtr);
+				TypeHandler<string>::extract(pos++, history.StackText, deflt.StackText, pExtr);
 				TypeHandler<DateTime>::extract(pos++, history.LastUpdate, deflt.LastUpdate, pExtr);
 			}
 
@@ -69,7 +75,9 @@ namespace Poco {
 				TypeHandler<string>::prepare(pos++, history.IP, pPrep);
 				TypeHandler<DateTime>::prepare(pos++, history.Timestamp, pPrep);
 				TypeHandler<string>::prepare(pos++, history.DumpPath, pPrep);
-				TypeHandler<string>::prepare(pos++, history.DumpResult, pPrep);
+				TypeHandler<string>::prepare(pos++, history.FollowUp, pPrep);
+				TypeHandler<string>::prepare(pos++, history.SymbolName, pPrep);
+				TypeHandler<string>::prepare(pos++, history.StackText, pPrep);
 				TypeHandler<DateTime>::prepare(pos++, history.LastUpdate, pPrep);
 			}
 		};

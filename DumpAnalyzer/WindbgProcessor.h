@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include "Poco\File.h"
+#include "..\DumpLib\History.h"
+
 class WindbgProcessor
 {
 public:
@@ -14,8 +16,8 @@ public:
 private:
 	void RecurseDir(Poco::Path basePath);
 	void ExecWindbg(Poco::Path dumpFile, Poco::Path base);
-	std::string GetResult(std::string filePath);
 	void Log(std::string info);
+	History GetResult(Poco::Path filePath);
 
 	std::string _basePath;
 

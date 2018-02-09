@@ -43,7 +43,7 @@ void WindbgProcessor::RecurseDir(Poco::Path base) {
 	DirectoryIterator it(base);
 	DirectoryIterator end;
 	std::string relatedPath;
-	std::string dumpResult;
+	History history;
 	std::string logPath;
 
 	while (it != end)
@@ -57,28 +57,28 @@ void WindbgProcessor::RecurseDir(Poco::Path base) {
 			{
 				logPath = Poco::cat(it.path().toString(), std::string(".log"));
 				if (!Poco::File(logPath).exists()) {
-
 					//analyze dump and generate log file
 					this->ExecWindbg(it.path(), base);
-
-					//get analyze result
-					dumpResult = WindbgProcessor::GetResult(logPath);
-					dumpResult = Poco::replace(dumpResult, "'", "''");
-
-					//get related path
-					relatedPath = Poco::replace(it.path().toString(), this->_basePath, std::string(""));
-
-					Log(Poco::format("result of %s is: %s", relatedPath, dumpResult));
-
-					//update db record
-					std::string s = Poco::format("update history set dumpPath='%s', dumpResult='%s', lastUpdate='%s' where guid='%s'",
-						relatedPath,
-						dumpResult,
-						Poco::DateTimeFormatter::format(Poco::LocalDateTime().timestamp(), "%Y-%m-%d %H:%M:%s"),
-						it.path().getBaseName());
-
-					Dump::Model::DBManager::Instance()->execute<History>(s, nullptr);
 				}
+
+				//get analyze result
+				History history = WindbgProcessor::GetResult(logPath);
+
+				//get related path
+				relatedPath = Poco::replace(it.path().toString(), this->_basePath, std::string(""));
+
+				//update db record
+				std::string s = Poco::format("update history set dumpPath='%s', followUp='%s', symbolName='%s', stackText='%s', lastUpdate='%s' where guid='%s'",
+					relatedPath,
+					Poco::replace(history.FollowUp, "'", "''"),
+					Poco::replace(history.SymbolName, "'", "''"),
+					Poco::replace(history.StackText, "'", "''"),
+					Poco::DateTimeFormatter::format(Poco::LocalDateTime().timestamp(), "%Y-%m-%d %H:%M:%s"),
+					it.path().getBaseName());
+
+				Log(Poco::format("followup of %s is: %s", relatedPath, history.FollowUp));
+
+				Dump::Model::DBManager::Instance()->execute<History>(s, nullptr);
 			}
 		}
 		catch (const std::exception& ex)
@@ -99,13 +99,18 @@ void WindbgProcessor::ExecWindbg(Poco::Path dumpFile, Poco::Path base) {
 	ph.wait();
 }
 
-std::string WindbgProcessor::GetResult(std::string filePath) {
+History WindbgProcessor::GetResult(Poco::Path filePath) {
+	History history;
+
 	std::vector<std::string> result;
 	Poco::Path log(filePath);
 
 	std::string lineContent;
-	std::ifstream logStream(filePath);
+	std::ifstream logStream(filePath.toString());
 	bool canWrite(false);
+	bool isFollowUp(false);
+	bool isSymbol(false);
+	bool isStack(false);
 
 	try
 	{
@@ -116,11 +121,25 @@ std::string WindbgProcessor::GetResult(std::string filePath) {
 			}
 			else
 			{
-				canWrite = lineContent.find(std::string("FOLLOWUP_IP")) != std::string::npos || lineContent.find(std::string("SYMBOL_NAME")) != std::string::npos;
+				isFollowUp = lineContent.find(std::string("FOLLOWUP_IP")) != std::string::npos;
+				isSymbol = lineContent.find(std::string("SYMBOL_NAME")) != std::string::npos;
+				isStack = lineContent.find(std::string("STACK_TEXT")) != std::string::npos;
+				canWrite = isFollowUp || isSymbol || isStack;
 			}
 
 			if (canWrite) {
-				result.push_back(lineContent);
+				lineContent += "\r\n";
+				if (isFollowUp) {
+					history.FollowUp += lineContent;
+				}
+
+				if (isSymbol) {
+					history.SymbolName += lineContent;
+				}
+
+				if (isStack) {
+					history.StackText += lineContent;
+				}
 			}
 		}
 		logStream.close();
@@ -134,7 +153,7 @@ std::string WindbgProcessor::GetResult(std::string filePath) {
 		}
 	}
 
-	return Poco::cat(std::string("\r\n"), result.begin(), result.end());
+	return history;
 }
 
 void WindbgProcessor::Log(std::string info) {

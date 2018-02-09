@@ -57,7 +57,7 @@ void FormRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 
 			DateTime dt;
 			dt.makeLocal(LocalDateTime().tzd());
-			DBManager::Instance()->execute<History>("replace into history values(?, ?, ?, ?, ?, ?, ?, ?)", new History
+			DBManager::Instance()->execute<History>("replace into history values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", new History
 			{
 				guid,
 				meta.has("product") ? meta.getValue<string>("product") : "",
@@ -81,7 +81,7 @@ void FormRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 
 	std::ostream& ostr = response.send();
 
-	ostr << getStaticResult();
+	ostr << this->getStaticResult();
 
 	ostr << "<h2>Request</h2><p>\n";
 	ostr << Poco::format(string("Method: %s <br>\n"), request.getMethod());
@@ -111,7 +111,7 @@ void FormRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 	ostr << "</body>\n";
 }
 
-string FormRequestHandler::getStaticResult() {
+inline string FormRequestHandler::getStaticResult() {
 	return
 		"<html>\n"
 		"<head>\n"
