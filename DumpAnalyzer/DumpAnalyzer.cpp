@@ -72,6 +72,10 @@ int DumpAnalyzer::main(const std::vector<std::string>& args)
 	}
 	else
 	{
+		if (args.size() > 0) {
+			_basePath = args[0];
+		}
+
 		AutoPtr<SimpleFileChannel> pChannel(new SimpleFileChannel);
 		pChannel->setProperty("path", "analyzer.log");
 		pChannel->setProperty("rotation", "2 K");
@@ -80,8 +84,10 @@ int DumpAnalyzer::main(const std::vector<std::string>& args)
 		this->setLogger(Logger::get("dump"));
 
 		int tid = Poco::Thread::currentTid();
-		string basePath = config().getString("basePath", "dumps");
-		WindbgProcessor processor(basePath);
+		if (_basePath == std::string("")) {
+			_basePath = config().getString("basePath", "dumps");
+		}
+		WindbgProcessor processor(_basePath);
 
 		this->logger().information(Poco::format("%s: Service will start in tid %d", Poco::DateTimeFormatter::format(Poco::LocalDateTime().timestamp(), "%Y-%m-%d %H:%M:%s"), tid));
 		processor.Start();
