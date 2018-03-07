@@ -3,7 +3,7 @@ Http File Server using C++ POCO Library
 
 This project is c++ demo using poco library. It can be used to receive files send by http client with http-post method. Besides saving files to disk, a json file include other body data will be created in the same dir as well as a new record will be insert into history table in sqlite db.
 
-## Backbroud
+## Background
 Serval months ago, I developed an app and released to all staffs of my company. It's worth congratulating me at first, but some strange crash errors were feedback as time goes on. What's worse, I could't reproduce them, even one case. So I must create a dump file when they crashed and send to server immediately. As a result, this is the dump files' sever. 
 
 ## How to use?
