@@ -5,6 +5,7 @@
 #include "Poco\Net\HTMLForm.h"
 #include "Poco\Net\HTTPServerRequest.h"
 #include "Poco\Net\HTTPServerResponse.h"
+#include "Poco\InflatingStream.h"
 #include "Poco\Util\ServerApplication.h"
 #include "FileHelper.h"
 #include "FormRequestHandler.h"
@@ -33,8 +34,7 @@ void FormRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 	int tid = Poco::Thread::currentTid();
 	string host = request.clientAddress().host().toString();
 
-	Application& app = Application::instance();
-	app.logger().information(Poco::format("%s: Request from %s in tid %d", Poco::DateTimeFormatter::format(Poco::LocalDateTime().timestamp(), "%Y-%m-%d %H:%M:%s"), host, tid));
+	Log(Poco::format("Request from %s in tid %d", host, tid));
 
 	HTMLForm form;
 	vector<string> mutipartContent;
@@ -42,34 +42,49 @@ void FormRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 		string dumpPath = FileHelper::getExistsDir(_basePath, host);
 		string guid = Poco::UUIDGenerator::defaultGenerator().create().toString();
 		MultiPartHandler partHandler(dumpPath, guid);
-		form.load(request, request.stream(), partHandler);
-		if (partHandler.isFile()) {
-			Poco::JSON::Object meta;
-			meta.set("tid", tid);
-			auto it = form.begin();
-			for (; it != form.end(); ++it) {
-				meta.set(it->first, it->second);
+		try
+		{
+			if (request.get("Content-Encoding", "") == "gzip")
+			{
+				Poco::InflatingInputStream inflater(request.stream(), Poco::InflatingStreamBuf::STREAM_GZIP);
+				form.load(request, inflater, partHandler);
+			}
+			else {
+				form.load(request, request.stream(), partHandler);
 			}
 
-			Poco::Path path(dumpPath, Poco::cat<string>(guid, ".json"));
-			ofstream ostr(path.toString());
-			meta.stringify(ostr);
+			if (partHandler.isFile()) {
+				Poco::JSON::Object meta;
+				meta.set("tid", tid);
+				auto it = form.begin();
+				for (; it != form.end(); ++it) {
+					meta.set(it->first, it->second);
+				}
 
-			DateTime dt;
-			dt.makeLocal(LocalDateTime().tzd());
-			DBManager::Instance()->execute<History>("replace into history values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", new History
-			{
-				guid,
-				meta.has("product") ? meta.getValue<string>("product") : "",
-				meta.has("version") ? meta.getValue<string>("version") : "",
-				host,
-				dt
-			});
+				Poco::Path path(dumpPath, Poco::cat<string>(guid, ".json"));
+				ofstream ostr(path.toString());
+				meta.stringify(ostr);
 
-			mutipartContent.push_back(Poco::format("<h2>Upload</h2><p>%s", partHandler.name()));
-			mutipartContent.push_back(Poco::format("<br>File Name: %s", partHandler.fileName()));
-			mutipartContent.push_back(Poco::format("<br>Type: %s", partHandler.contentType()));
-			mutipartContent.push_back(Poco::format("<br>Size:%d<br></p>", partHandler.length()));
+				DateTime dt;
+				dt.makeLocal(LocalDateTime().tzd());
+				DBManager::Instance()->execute<History>("replace into history values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", new History
+				{
+					guid,
+					meta.has("product") ? meta.getValue<string>("product") : "",
+					meta.has("version") ? meta.getValue<string>("version") : "",
+					host,
+					dt
+				});
+
+				mutipartContent.push_back(Poco::format("<h2>Upload</h2><p>%s", partHandler.name()));
+				mutipartContent.push_back(Poco::format("<br>File Name: %s", partHandler.fileName()));
+				mutipartContent.push_back(Poco::format("<br>Type: %s", partHandler.contentType()));
+				mutipartContent.push_back(Poco::format("<br>Size:%d<br></p>", partHandler.length()));
+			}
+		}
+		catch (const std::exception& ex)
+		{
+			Log(ex.what());
 		}
 	}
 	else {
@@ -134,6 +149,12 @@ inline string FormRequestHandler::getStaticResult() {
 		"<input type=\"file\" name=\"file\" size=\"31\"> \n"
 		"<input type=\"submit\" value=\"Upload\">\n"
 		"</form>\n";
+}
+
+void FormRequestHandler::Log(std::string info) {
+	std::string timestamp = Poco::DateTimeFormatter::format(Poco::LocalDateTime().timestamp(), "%Y-%m-%d %H:%M:%s");
+	std::cout << timestamp << ":" << info << std::endl;
+	Poco::Util::Application::instance().logger().log(Poco::cat(timestamp, std::string(":"), info));
 }
 
 

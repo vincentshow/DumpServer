@@ -16,4 +16,5 @@ public:
 private:
 	string _basePath;
 	string getStaticResult();
+	void Log(std::string info);
 };
